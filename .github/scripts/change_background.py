@@ -24,7 +24,7 @@ data = {
     "groupColor": "#FFCC00",
     "layers": [
         {
-            "id": "layer-1",
+            "id": "layer-0",
             "type": "image",  # Bisa diganti sesuai kebutuhan (e.g., video)
             "width": 1920,
             "height": 158,
