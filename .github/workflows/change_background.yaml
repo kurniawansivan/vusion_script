@@ -19,7 +19,7 @@ jobs:
         run: pip install requests
 
       - name: Change Background
-        run: python change_background.py
+        run: python .github/scripts/change_background.py
 
     env:
       STORE_ID: ${{ secrets.STORE_ID }}
