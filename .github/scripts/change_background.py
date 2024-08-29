@@ -1,7 +1,8 @@
 import os
-import requests
+import urllib.request
+import json
 
-# Ambil data dari environment variables (GitHub Actions Variables)
+# Ambil data dari environment variables (GitHub Actions Variables dan Secrets)
 storeId = os.getenv('STORE_ID')
 deviceId = os.getenv('DEVICE_ID')
 Ocp_Apim_Subscription_Key = os.getenv('OCP_APIM_SUBSCRIPTION_KEY')
@@ -11,9 +12,10 @@ file_url = os.getenv('FILE_URL')  # Ambil URL dari GitHub Actions Variable
 url = f"https://eu-api.vusionrail.com/v1/stores/{storeId}/devices/{deviceId}/background"
 
 # Header yang diperlukan
-headers = {
-    "Ocp-Apim-Subscription-Key": Ocp_Apim_Subscription_Key,
-    "Content-Type": "application/json"
+hdr = {
+    'Content-Type': 'application/json',
+    'Cache-Control': 'no-cache',
+    'Ocp-Apim-Subscription-Key': Ocp_Apim_Subscription_Key,
 }
 
 # Body untuk penggantian background
@@ -22,7 +24,7 @@ data = {
     "groupColor": "#FFCC00",
     "layers": [
         {
-            "id": "layer-0",
+            "id": "layer-1",
             "type": "image",  # Bisa diganti sesuai kebutuhan (e.g., video)
             "width": 1920,
             "height": 158,
@@ -32,9 +34,25 @@ data = {
     ]
 }
 
-# Kirim permintaan POST untuk mengganti background
-response = requests.post(url, json=data, headers=headers)
+try:
+    # Konversi data ke JSON dan kemudian ke bytes
+    json_data = json.dumps(data).encode("utf-8")
+    
+    # Membuat request dengan headers dan data
+    req = urllib.request.Request(url, headers=hdr, data=json_data)
+    
+    # Menentukan metode request sebagai 'POST'
+    req.get_method = lambda: 'POST'
+    
+    # Mengirim request dan mendapatkan respons
+    response = urllib.request.urlopen(req)
+    
+    # Menampilkan status kode respons
+    print(f"Status Code: {response.getcode()}")
+    
+    # Menampilkan body respons
+    response_body = response.read().decode('utf-8')
+    print(response_body)
 
-# Tampilkan hasilnya
-print(f"Status Code: {response.status_code}")
-print(f"Response: {response.json()}")
+except Exception as e:
+    print(f"Error: {e}")
