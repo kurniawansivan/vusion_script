@@ -1,0 +1,27 @@
+name: Verify Device Status
+
+on:
+  workflow_dispatch:  # Trigger manual untuk menjalankan workflow
+
+jobs:
+  verify-device-status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Verify Device Status
+        run: python verify_device_status.py
+
+    env:
+      STORE_ID: ${{ secrets.STORE_ID }}
+      DEVICE_ID: ${{ secrets.DEVICE_ID }}
+      OCP_APIM_SUBSCRIPTION_KEY: ${{ secrets.OCP_APIM_SUBSCRIPTION_KEY }}
