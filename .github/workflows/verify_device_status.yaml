@@ -19,7 +19,7 @@ jobs:
         run: pip install requests
 
       - name: Verify Device Status
-        run: python verify_device_status.py
+        run: python .github/scripts/verify_device_status.py
 
     env:
       STORE_ID: ${{ secrets.STORE_ID }}
