@@ -1,72 +1,102 @@
 import os
 import urllib.request
 import json
-import time  # Import modul time untuk mengatur delay
+import time
+import argparse
 
-# Ambil data dari environment variables (GitHub Actions Variables dan Secrets)
-storeId = os.getenv('STORE_ID')
-deviceId = os.getenv('DEVICE_ID')
-Ocp_Apim_Subscription_Key = os.getenv('OCP_APIM_SUBSCRIPTION_KEY')
-new_file_url = os.getenv('FILE_URL')  # Ambil URL gambar baru dari GitHub Actions Variable
-original_file_url = os.getenv('ORIGINAL_FILE_URL')  # Ambil URL gambar awal dari GitHub Actions Variable
-
-# URL untuk penggantian background
-url = f"https://eu-api.vusionrail.com/v1/stores/{storeId}/devices/{deviceId}/background"
-
-# Header yang diperlukan
-hdr = {
-    'Content-Type': 'application/json',
-    'Cache-Control': 'no-cache',
-    'Ocp-Apim-Subscription-Key': Ocp_Apim_Subscription_Key,
-}
-
-def change_background(file_url):
-    # Body untuk penggantian background
-    data = {
-        "groupId": "G1337-#FFCC00",
-        "groupColor": "#FFCC00",
+# Fungsi untuk membuat payload JSON
+def create_payload(file_url):
+    return {
+        "group_id": "G1337-#FFCC00",
+        "group_color": "#FFCC00",
         "layers": [
             {
                 "id": "layer-1",
-                "type": "image",  # Bisa diganti sesuai kebutuhan (e.g., video)
+                "type": "image",
                 "width": 1920,
                 "height": 158,
-                "url": file_url,  # Gunakan URL yang diberikan
+                "url": file_url,
                 "visible": True
             }
-        ]
+        ],
     }
 
+# Fungsi untuk membuat header request
+def create_header(ocp_apim_subscription_key):
+    return {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-cache",
+        "Ocp-Apim-Subscription-Key": ocp_apim_subscription_key,
+    }
+
+# Fungsi untuk mengirimkan HTTP request dan mengubah background
+def change_background(url, hdr, file_url):
+    data = create_payload(file_url)
+    
     try:
-        # Konversi data ke JSON dan kemudian ke bytes
         json_data = json.dumps(data).encode("utf-8")
-        
-        # Membuat request dengan headers dan data
         req = urllib.request.Request(url, headers=hdr, data=json_data)
-        
-        # Menentukan metode request sebagai 'POST'
         req.get_method = lambda: 'POST'
         
-        # Mengirim request dan mendapatkan respons
         response = urllib.request.urlopen(req)
-        
-        # Menampilkan status kode respons
         print(f"Status Code: {response.getcode()}")
-        
-        # Menampilkan body respons
         response_body = response.read().decode('utf-8')
         print(response_body)
-
+    except urllib.error.HTTPError as e:
+        print(f"HTTP Error: {e.code} - {e.reason}")
+    except urllib.error.URLError as e:
+        print(f"URL Error: {e.reason}")
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Unexpected Error: {e}")
 
-# Set background ke gambar baru
-print("Mengubah background ke gambar baru...")
-change_background(new_file_url)
+# Fungsi untuk membaca konfigurasi dari file JSON
+def read_config_from_json(json_file):
+    try:
+        with open(json_file, 'r') as f:
+            config = json.load(f)
+            return config
+    except Exception as e:
+        raise Exception("Error reading JSON configuration file") from e
 
-# Tunggu selama 1 menit
-time.sleep(30)
+# Fungsi utama untuk eksekusi
+def main(store_id, device_id, ocp_apim_subscription_key, new_file_url, original_file_url):
+    url = f"https://eu-api.vusionrail.com/v1/stores/{store_id}/devices/{device_id}/background"
+    hdr = create_header(ocp_apim_subscription_key)
 
-# Kembalikan background ke gambar awal
-print("Mengembalikan background ke gambar awal...")
-change_background(original_file_url)
+    print("Mengubah background ke gambar baru...")
+    change_background(url, hdr, new_file_url)
+
+    time.sleep(30)  # Tunggu selama 30 detik
+
+    print("Mengembalikan background ke gambar awal...")
+    change_background(url, hdr, original_file_url)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Temporarily change device background.')
+    parser.add_argument('--store_id', type=str, help='The store ID.')
+    parser.add_argument('--device_id', type=str, help='The device ID.')
+    parser.add_argument('--subscription_key', type=str, help='The Ocp-Apim-Subscription-Key.')
+    parser.add_argument('--new_file_url', type=str, help='The URL of the new file to set as background.')
+    parser.add_argument('--original_file_url', type=str, help='The URL of the original file to restore as background.')
+    parser.add_argument('--config', type=str, help='Path to JSON configuration file.')
+
+    args = parser.parse_args()
+
+    if args.config:
+        config = read_config_from_json(args.config)
+        store_id = config['store_id']
+        device_id = config['device_id']
+        ocp_apim_subscription_key = config['subscription_key']
+        new_file_url = config['file_url']
+        original_file_url = config['original_file_url']
+    else:
+        store_id = args.store_id
+        device_id = args.device_id
+        ocp_apim_subscription_key = args.subscription_key
+        new_file_url = args.new_file_url
+        original_file_url = args.original_file_url
+
+    if not all([store_id, device_id, ocp_apim_subscription_key, new_file_url, original_file_url]):
+        raise ValueError("All parameters must be provided either through command line or JSON file")
+
+    main(store_id, device_id, ocp_apim_subscription_key, new_file_url, original_file_url)
