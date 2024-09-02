@@ -1,6 +1,6 @@
 import streamlit as st
 import subprocess
-from view import render_view  # Mengimpor fungsi render_view dari view.py
+from view import render_view
 
 # Fungsi untuk menjalankan change_background_temp.py
 def run_change_background():
@@ -10,7 +10,6 @@ def run_change_background():
         st.error(f"Error running change_background_temp.py: {e}")
 
 def main():
-    # Render UI dan cek jika tombol ditekan
     if render_view():
         run_change_background()
 
