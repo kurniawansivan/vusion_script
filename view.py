@@ -1,5 +1,6 @@
 import streamlit as st
 import base64
+import time
 
 # Fungsi untuk menambahkan background image
 def add_bg_from_local(image_file):
@@ -18,33 +19,20 @@ def add_bg_from_local(image_file):
         unsafe_allow_html=True
     )
 
-def render_view():
-    st.set_page_config(page_title="Hansaplast Smart System", layout="centered")
-    
-    # Tambahkan gambar latar belakang
-    add_bg_from_local('assets/background_main.jpg')
-    
-    # Mengatur semua konten di tengah layar
-    st.markdown(
-        """
-        <style>
-        .block-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            text-align: center;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-    
-    # Menampilkan judul
+def render_home():
     st.title("Hansaplast Smart System")
-    
-    # Button untuk memulai
     if st.button("Touch to Start"):
-        return True  # Mengembalikan True jika tombol ditekan
+        return True
+    return False
 
-    return False  # Mengembalikan False jika tombol tidak ditekan
+def render_question(question, options, key):
+    st.markdown(f"### <span style='color:white;'>{question}</span>", unsafe_allow_html=True)
+    selected = st.radio("", options, key=key)
+    if st.button("Next", key=f"next-{key}"):
+        return selected
+    return None
+
+def render_result(result, image_file):
+    st.markdown(f"## <span style='color:white;'>{result}</span>", unsafe_allow_html=True)
+    add_bg_from_local(image_file)
+    time.sleep(30)  # Tampilkan background baru selama 30 detik

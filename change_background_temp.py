@@ -87,7 +87,7 @@ if __name__ == "__main__":
         store_id = config['store_id']
         device_id = config['device_id']
         ocp_apim_subscription_key = config['subscription_key']
-        new_file_url = config['file_url']
+        new_file_url = config['new_file_url']
         original_file_url = config['original_file_url']
     else:
         store_id = args.store_id
