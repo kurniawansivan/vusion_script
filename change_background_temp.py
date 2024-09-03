@@ -59,44 +59,36 @@ def read_config_from_json(json_file):
         raise Exception("Error reading JSON configuration file") from e
 
 # Fungsi utama untuk eksekusi
-def main(store_id, device_id, ocp_apim_subscription_key, new_file_url, original_file_url):
+def main(store_id, device_id, ocp_apim_subscription_key, selected_file_url, background_url):
     url = f"https://eu-api.vusionrail.com/v1/stores/{store_id}/devices/{device_id}/background"
     hdr = create_header(ocp_apim_subscription_key)
 
     print("Mengubah background ke gambar baru...")
-    change_background(url, hdr, new_file_url)
+    change_background(url, hdr, selected_file_url)
 
     time.sleep(30)  # Tunggu selama 30 detik
 
     print("Mengembalikan background ke gambar awal...")
-    change_background(url, hdr, original_file_url)
+    change_background(url, hdr, background_url)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Temporarily change device background.')
     parser.add_argument('--store_id', type=str, help='The store ID.')
     parser.add_argument('--device_id', type=str, help='The device ID.')
     parser.add_argument('--subscription_key', type=str, help='The Ocp-Apim-Subscription-Key.')
-    parser.add_argument('--new_file_url', type=str, help='The URL of the new file to set as background.')
-    parser.add_argument('--original_file_url', type=str, help='The URL of the original file to restore as background.')
-    parser.add_argument('--config', type=str, help='Path to JSON configuration file.')
+    parser.add_argument('--selected_file_url', type=str, help='The URL of the selected file to set as background.')
+    parser.add_argument('--background_url', type=str, help='The URL of the background to restore.')
 
     args = parser.parse_args()
 
-    if args.config:
-        config = read_config_from_json(args.config)
-        store_id = config['store_id']
-        device_id = config['device_id']
-        ocp_apim_subscription_key = config['subscription_key']
-        new_file_url = config['new_file_url']
-        original_file_url = config['original_file_url']
-    else:
-        store_id = args.store_id
-        device_id = args.device_id
-        ocp_apim_subscription_key = args.subscription_key
-        new_file_url = args.new_file_url
-        original_file_url = args.original_file_url
+    config = read_config_from_json('config.json')
+    store_id = config.get('store_id', args.store_id)
+    device_id = config.get('device_id', args.device_id)
+    ocp_apim_subscription_key = config.get('subscription_key', args.subscription_key)
+    background_url = config.get('background_url', args.background_url)
+    selected_file_url = args.selected_file_url
 
-    if not all([store_id, device_id, ocp_apim_subscription_key, new_file_url, original_file_url]):
+    if not all([store_id, device_id, ocp_apim_subscription_key, selected_file_url, background_url]):
         raise ValueError("All parameters must be provided either through command line or JSON file")
 
-    main(store_id, device_id, ocp_apim_subscription_key, new_file_url, original_file_url)
+    main(store_id, device_id, ocp_apim_subscription_key, selected_file_url, background_url)

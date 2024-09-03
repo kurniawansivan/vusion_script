@@ -2,6 +2,8 @@
     "store_id": "wolkk001",
     "device_id": "00001",
     "subscription_key": "cb9f25fcf7cb486e86975e129d492738",
-    "file_url": "https://raw.githubusercontent.com/kurniawansivan/vusion_script/main/assets/DONE.jpg",
-    "original_file_url": "https://raw.githubusercontent.com/kurniawansivan/vusion_script/main/assets/TEST.jpg"
+    "background_url": "https://raw.githubusercontent.com/kurniawansivan/vusion_script/prototype/assets/hansaplast.jpg",
+    "hansaplast_waterproof_url": "https://raw.githubusercontent.com/kurniawansivan/vusion_script/prototype/assets/left.jpg",
+    "hansaplast_universal_url": "https://raw.githubusercontent.com/kurniawansivan/vusion_script/prototype/assets/middle.jpg",
+    "hansaplast_foot_url": "https://raw.githubusercontent.com/kurniawansivan/vusion_script/prototype/assets/right.jpg"
 }
