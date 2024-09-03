@@ -32,16 +32,8 @@ def render_question(question, options, key):
     answer = st.radio("", options, key=f"radio-{key}")
     if st.button("Next", key=f"next-{key}"):
         return answer
+    return None
 
 def render_result(result_text):
     st.markdown(f"**{result_text}**")
-
-def get_result_background_url(answers):
-    if answers == ["Outdoor activities or sports", "Often exposed to water or in a wet environment", "Wet wounds or infections caused by water"]:
-        return "The suitable product is Hansaplast Plaster Aqua Protect because it protects wounds during outdoor activities in a wet environment.", "https://raw.githubusercontent.com/kurniawansivan/vusion_script/prototype/assets/left.jpg"
-    elif answers == ["Indoor work or daily activities", "Occasionally exposed to water", "Open wounds needing long-term protection"]:
-        return "The suitable product is Hansaplast Universal Plaster because it provides long-term protection for daily indoor activities.", "https://raw.githubusercontent.com/kurniawansivan/vusion_script/prototype/assets/middle.jpg"
-    elif answers == ["Walking long distances or standing for long periods", "Rarely or almost never", "Blisters or friction on feet when walking"]:
-        return "The suitable product is Hansaplast Foot Plaster because it reduces friction on feet during long walks or standing for long periods.", "https://raw.githubusercontent.com/kurniawansivan/vusion_script/prototype/assets/right.jpg"
-    else:
-        return None, None  # Default jika tidak ada kecocokan
+    st.button("Back to Home", on_click=lambda: st.session_state.update(step=0))

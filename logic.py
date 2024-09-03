@@ -1,6 +1,16 @@
-from view import render_home, render_question, render_result, get_result_background_url
+from view import render_home, render_question, render_result, add_bg_from_local
 import streamlit as st
 import subprocess
+
+def get_result_background_url(answers):
+    if answers == ["Outdoor activities or sports", "Often exposed to water or in a wet environment", "Wet wounds or infections caused by water"]:
+        return "The suitable product is Hansaplast Plaster Aqua Protect because it protects wounds during outdoor activities in wet environments.", "https://raw.githubusercontent.com/kurniawansivan/vusion_script/prototype/assets/left.jpg"
+    elif answers == ["Indoor work or daily activities", "Occasionally exposed to water", "Open wounds needing long-term protection"]:
+        return "The suitable product is Hansaplast Universal Plaster because it provides long-term protection for daily indoor activities.", "https://raw.githubusercontent.com/kurniawansivan/vusion_script/prototype/assets/middle.jpg"
+    elif answers == ["Walking long distances or standing for long periods", "Rarely or almost never", "Blisters or friction on feet when walking"]:
+        return "The suitable product is Hansaplast Foot Plaster because it reduces friction on feet during long walks or standing.", "https://raw.githubusercontent.com/kurniawansivan/vusion_script/prototype/assets/right.jpg"
+    else:
+        return None, None
 
 def main():
     if 'step' not in st.session_state:
