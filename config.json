@@ -4,6 +4,9 @@
     "subscription_key": "cb9f25fcf7cb486e86975e129d492738",
     "background_url": "https://raw.githubusercontent.com/kurniawansivan/vusion_script/prototype/assets/hansaplast.jpg",
     "hansaplast_waterproof_url": "https://raw.githubusercontent.com/kurniawansivan/vusion_script/prototype/assets/left.jpg",
+    "hansaplast_waterproof_cache_id": "87999565-6bb9-4a48-ba60-5162bb4d9cc9",
     "hansaplast_universal_url": "https://raw.githubusercontent.com/kurniawansivan/vusion_script/prototype/assets/middle.jpg",
-    "hansaplast_foot_url": "https://raw.githubusercontent.com/kurniawansivan/vusion_script/prototype/assets/right.jpg"
+    "hansaplast_universal_cache_id": "b6b91e0a-ae51-430e-bb32-9163df30e5d6",
+    "hansaplast_foot_url": "https://raw.githubusercontent.com/kurniawansivan/vusion_script/prototype/assets/right.jpg",
+    "hansaplast_foot_cache_id": "901dc042-75b4-4d05-8360-e070f063f8ed"
 }

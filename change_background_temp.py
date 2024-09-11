@@ -4,8 +4,8 @@ import json
 import time
 import argparse
 
-# Fungsi untuk membuat payload JSON
-def create_payload(file_url):
+# Fungsi untuk membuat payload JSON dengan cacheId
+def create_payload(file_url, cache_id):
     return {
         "group_id": "G1337-#FFCC00",
         "group_color": "#FFCC00",
@@ -16,6 +16,7 @@ def create_payload(file_url):
                 "width": 1920,
                 "height": 158,
                 "url": file_url,
+                "cacheId": cache_id,  # Menambahkan cacheId
                 "visible": True
             }
         ],
@@ -30,8 +31,8 @@ def create_header(ocp_apim_subscription_key):
     }
 
 # Fungsi untuk mengirimkan HTTP request dan mengubah background
-def change_background(url, hdr, file_url):
-    data = create_payload(file_url)
+def change_background(url, hdr, file_url, cache_id):
+    data = create_payload(file_url, cache_id)
     
     try:
         json_data = json.dumps(data).encode("utf-8")
@@ -59,17 +60,17 @@ def read_config_from_json(json_file):
         raise Exception("Error reading JSON configuration file") from e
 
 # Fungsi utama untuk eksekusi
-def main(store_id, device_id, ocp_apim_subscription_key, selected_file_url, background_url):
+def main(store_id, device_id, ocp_apim_subscription_key, selected_file_url, cache_id, background_url):
     url = f"https://eu-api.vusionrail.com/v1/stores/{store_id}/devices/{device_id}/background"
     hdr = create_header(ocp_apim_subscription_key)
 
     print("Mengubah background ke gambar baru...")
-    change_background(url, hdr, selected_file_url)
+    change_background(url, hdr, selected_file_url, cache_id)
 
     time.sleep(30)  # Tunggu selama 30 detik
 
     print("Mengembalikan background ke gambar awal...")
-    change_background(url, hdr, background_url)
+    change_background(url, hdr, background_url, None)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Temporarily change device background.')
@@ -77,6 +78,7 @@ if __name__ == "__main__":
     parser.add_argument('--device_id', type=str, help='The device ID.')
     parser.add_argument('--subscription_key', type=str, help='The Ocp-Apim-Subscription-Key.')
     parser.add_argument('--selected_file_url', type=str, help='The URL of the selected file to set as background.')
+    parser.add_argument('--cache_id', type=str, help='The cache ID of the selected file.')
     parser.add_argument('--background_url', type=str, help='The URL of the background to restore.')
 
     args = parser.parse_args()
@@ -87,8 +89,9 @@ if __name__ == "__main__":
     ocp_apim_subscription_key = config.get('subscription_key', args.subscription_key)
     background_url = config.get('background_url', args.background_url)
     selected_file_url = args.selected_file_url
+    cache_id = args.cache_id
 
     if not all([store_id, device_id, ocp_apim_subscription_key, selected_file_url, background_url]):
         raise ValueError("All parameters must be provided either through command line or JSON file")
 
-    main(store_id, device_id, ocp_apim_subscription_key, selected_file_url, background_url)
+    main(store_id, device_id, ocp_apim_subscription_key, selected_file_url, cache_id, background_url)

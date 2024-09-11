@@ -1,16 +1,28 @@
-from view import render_home, render_question, render_result, add_bg_from_local
+from view import render_home, render_question, render_result
 import streamlit as st
 import subprocess
+import json
+
+# Fungsi untuk membaca konfigurasi dari file JSON
+def read_config_from_json(json_file):
+    try:
+        with open(json_file, 'r') as f:
+            config = json.load(f)
+            return config
+    except Exception as e:
+        raise Exception("Error reading JSON configuration file") from e
 
 def get_result_background_url(answers):
+    config = read_config_from_json('config.json')
+    
     if answers == ["Outdoor activities or sports", "Often exposed to water or in a wet environment", "Wet wounds or infections caused by water"]:
-        return "The suitable product is Hansaplast Plaster Aqua Protect because it protects wounds during outdoor activities in wet environments.", "https://raw.githubusercontent.com/kurniawansivan/vusion_script/prototype/assets/left.jpg"
+        return "The suitable product is Hansaplast Plaster Aqua Protect because it protects wounds during outdoor activities in wet environments.", config['hansaplast_waterproof_url'], config['hansaplast_waterproof_cache_id']
     elif answers == ["Indoor work or daily activities", "Occasionally exposed to water", "Open wounds needing long-term protection"]:
-        return "The suitable product is Hansaplast Universal Plaster because it provides long-term protection for daily indoor activities.", "https://raw.githubusercontent.com/kurniawansivan/vusion_script/prototype/assets/middle.jpg"
+        return "The suitable product is Hansaplast Universal Plaster because it provides long-term protection for daily indoor activities.", config['hansaplast_universal_url'], config['hansaplast_universal_cache_id']
     elif answers == ["Walking long distances or standing for long periods", "Rarely or almost never", "Blisters or friction on feet when walking"]:
-        return "The suitable product is Hansaplast Foot Plaster because it reduces friction on feet during long walks or standing.", "https://raw.githubusercontent.com/kurniawansivan/vusion_script/prototype/assets/right.jpg"
+        return "The suitable product is Hansaplast Foot Plaster because it reduces friction on feet during long walks or standing.", config['hansaplast_foot_url'], config['hansaplast_foot_cache_id']
     else:
-        return None, None
+        return None, None, None
 
 def main():
     if 'step' not in st.session_state:
@@ -41,9 +53,9 @@ def main():
     # Tampilkan hasil setelah semua pertanyaan dijawab
     elif st.session_state.step == 4:
         answers = [st.session_state.get(f"answer_{i}") for i in range(1, 4)]
-        result_text, new_background_url = get_result_background_url(answers)
+        result_text, new_background_url, cache_id = get_result_background_url(answers)
         if result_text and new_background_url:
             render_result(result_text)
-            subprocess.run(['python', 'change_background_temp.py', '--selected_file_url', new_background_url])
+            subprocess.run(['python', 'change_background_temp.py', '--selected_file_url', new_background_url, '--cache_id', cache_id])
         else:
             st.error("No suitable product found for the given answers.")
